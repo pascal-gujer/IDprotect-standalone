@@ -44,12 +44,14 @@ network.
 - Before, after, and horizontal split comparison preview.
 - PNG and JPEG export with JPEG quality control.
 - Export redraws through Canvas, so source metadata and EXIF are not copied.
+- English, German, and French interface translations.
 
 ## Source Layout
 
 `index.html` is generated. For normal maintenance, edit these inputs instead:
 
 - `src/index.template.html`: HTML shell with inline placeholders.
+- `src/locales/*.json`: embedded English, German, and French UI translations.
 - `src/styles.css`: application styles.
 - `src/app.js`: Canvas editor and export logic.
 - `tools/build.py`: standard-library build script.

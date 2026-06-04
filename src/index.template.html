@@ -10,59 +10,67 @@
 {{IDPROTECT_CSS}}  </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <a class="github-ribbon" href="https://github.com/sponsors/pascal-gujer" target="_blank" rel="noopener noreferrer" aria-label="Sponsor this project on GitHub">
+  <a class="skip-link" href="#main" data-i18n="a11y.skip_to_content">Skip to content</a>
+  <a class="github-ribbon" href="https://github.com/sponsors/pascal-gujer" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="sponsor.aria" aria-label="Sponsor this project on GitHub">
     <svg class="github-ribbon-heart" viewBox="0 0 16 16" aria-hidden="true">
       <path d="M8 14s-6-3.6-6-8.1C2 3.7 3.5 2 5.5 2c1.1 0 2 .5 2.5 1.3C8.5 2.5 9.4 2 10.5 2c2 0 3.5 1.7 3.5 3.9C14 10.4 8 14 8 14z"></path>
     </svg>
-    <span>Sponsor</span>
+    <span data-i18n="sponsor.label">Sponsor</span>
   </a>
   <div class="app-shell" id="main">
     <header class="app-header">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">ID</div>
         <div>
-          <h1>ID Protect Offline</h1>
-          <p class="subtitle">Watermark and redact ID scans before sharing.</p>
+          <h1 data-i18n="brand.title">ID Protect Offline</h1>
+          <p class="subtitle" data-i18n="brand.subtitle">Watermark and redact ID scans before sharing.</p>
         </div>
       </div>
-      <div class="privacy-pill">Local browser processing - no uploads, no external resources.</div>
+      <div class="header-controls">
+        <label class="language-label" for="languageSelect" data-i18n="language.label">Language</label>
+        <select class="select-control language-select" id="languageSelect">
+          <option value="en" data-i18n="language.option.en">English</option>
+          <option value="de" data-i18n="language.option.de">Deutsch</option>
+          <option value="fr" data-i18n="language.option.fr">Français</option>
+        </select>
+        <div class="privacy-pill" data-i18n="privacy.pill">Local browser processing - no uploads, no external resources.</div>
+      </div>
     </header>
 
-    <section class="notice" aria-label="Privacy and export notice">
+    <section class="notice" data-i18n-aria-label="notice.aria" aria-label="Privacy and export notice">
       <div>
-        <strong>Private by design</strong>
-        <p>Images stay on this device. Exported PNG/JPEG files are redrawn through Canvas, so original metadata and EXIF are not copied.</p>
+        <strong data-i18n="notice.title">Private by design</strong>
+        <p data-i18n="notice.body">Images stay on this device. Exported PNG/JPEG files are redrawn through Canvas, so original metadata and EXIF are not copied.</p>
       </div>
       <details>
-        <summary>Export details</summary>
-        <p>The downloaded file contains the cropped pixels, solid redactions, and repeated watermark. The source file is never uploaded or modified.</p>
+        <summary data-i18n="notice.details.summary">Export details</summary>
+        <p data-i18n="notice.details.body">The downloaded file contains the cropped pixels, solid redactions, and repeated watermark. The source file is never uploaded or modified.</p>
       </details>
     </section>
 
-    <section class="action-bar" aria-label="Session controls">
+    <section class="action-bar" data-i18n-aria-label="session.controls.aria" aria-label="Session controls">
       <div class="status-line">
         <span class="status-dot" id="statusDot" aria-hidden="true"></span>
         <span id="statusText">Ready. Load an image to begin.</span>
       </div>
       <div class="actions">
-        <button class="button" type="button" id="resetButton">Clear all</button>
-        <button class="button" type="button" id="exportJpegButton" disabled>Export JPEG</button>
-        <button class="button primary" type="button" id="exportPngButton" disabled>Export PNG</button>
+        <button class="button" type="button" id="resetButton" data-i18n="button.clear_all">Clear all</button>
+        <button class="button" type="button" id="exportJpegButton" disabled data-i18n="button.export_jpeg">Export JPEG</button>
+        <button class="button primary" type="button" id="exportPngButton" disabled data-i18n="button.export_png">Export PNG</button>
       </div>
     </section>
 
     <section class="workspace">
       <article class="panel image-panel" aria-labelledby="imageTitle">
         <div class="panel-header">
-          <h2 id="imageTitle">1. Load image</h2>
-          <button class="button" type="button" id="pickButton">Choose image</button>
+          <h2 id="imageTitle" data-i18n="image.title">1. Load image</h2>
+          <button class="button" type="button" id="pickButton" data-i18n="button.choose_image">Choose image</button>
         </div>
         <div class="panel-body">
-          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Drop an image or choose a file">
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" data-i18n-aria-label="image.dropzone.aria" aria-label="Drop an image or choose a file">
             <div>
-              <strong>Drop ID or passport scan</strong>
-              <span>PNG, JPEG, AVIF, GIF, BMP, or any browser-supported image.</span>
+              <strong data-i18n="image.dropzone.title">Drop ID or passport scan</strong>
+              <span data-i18n="image.dropzone.hint">PNG, JPEG, AVIF, GIF, BMP, or any browser-supported image.</span>
             </div>
           </div>
           <input class="sr-only" id="fileInput" type="file" accept="image/png,image/jpeg,image/avif,image/gif,image/bmp,image/webp">
@@ -72,31 +80,31 @@
 
       <article class="panel preview-panel" aria-labelledby="previewTitle">
         <div class="panel-header">
-          <h2 id="previewTitle">2. Edit preview</h2>
-          <div class="segmented" aria-label="Editing mode">
-            <button class="segment active" type="button" id="modeCropButton" data-mode="crop" aria-pressed="true">Crop</button>
-            <button class="segment" type="button" id="modeRedactButton" data-mode="redact" aria-pressed="false">Redact</button>
-            <button class="segment" type="button" id="modePreviewButton" data-mode="preview" aria-pressed="false">Preview</button>
+          <h2 id="previewTitle" data-i18n="preview.title">2. Edit preview</h2>
+          <div class="segmented" data-i18n-aria-label="mode.aria" aria-label="Editing mode">
+            <button class="segment active" type="button" id="modeCropButton" data-mode="crop" aria-pressed="true" data-i18n="mode.crop">Crop</button>
+            <button class="segment" type="button" id="modeRedactButton" data-mode="redact" aria-pressed="false" data-i18n="mode.redact">Redact</button>
+            <button class="segment" type="button" id="modePreviewButton" data-mode="preview" aria-pressed="false" data-i18n="mode.preview">Preview</button>
           </div>
         </div>
         <div class="panel-body">
           <div class="preview-toolbar">
             <label class="field compact" for="previewMode">
-              <span>View</span>
+              <span data-i18n="preview.view">View</span>
               <select class="select-control" id="previewMode">
-                <option value="after">After</option>
-                <option value="before">Before</option>
-                <option value="compare">Compare</option>
+                <option value="after" data-i18n="preview.after">After</option>
+                <option value="before" data-i18n="preview.before">Before</option>
+                <option value="compare" data-i18n="preview.compare">Compare</option>
               </select>
             </label>
             <label class="field compact compare-control" for="compareSplit" id="compareControl">
-              <span>Split</span>
+              <span data-i18n="preview.split">Split</span>
               <input id="compareSplit" type="range" min="5" max="95" value="50">
             </label>
           </div>
           <div class="canvas-frame" id="canvasFrame">
-            <canvas id="previewCanvas" aria-label="Image preview"></canvas>
-            <div class="empty-state" id="emptyPreview">Load an image to see the live preview.</div>
+            <canvas id="previewCanvas" data-i18n-aria-label="preview.canvas.aria" aria-label="Image preview"></canvas>
+            <div class="empty-state" id="emptyPreview" data-i18n="preview.empty">Load an image to see the live preview.</div>
           </div>
           <div class="message" id="editMessage">Crop first, then draw solid redaction boxes and export.</div>
         </div>
@@ -104,72 +112,72 @@
 
       <article class="panel controls-panel" aria-labelledby="controlsTitle">
         <div class="panel-header">
-          <h2 id="controlsTitle">3. Protect and export</h2>
+          <h2 id="controlsTitle" data-i18n="controls.title">3. Protect and export</h2>
         </div>
         <div class="panel-body controls-stack">
           <section class="control-section" aria-labelledby="watermarkTitle">
             <div class="section-heading">
-              <h3 id="watermarkTitle">Watermark</h3>
+              <h3 id="watermarkTitle" data-i18n="watermark.title">Watermark</h3>
               <div class="section-actions">
-                <button class="button small" type="button" id="insertDateButton">Insert date</button>
-                <button class="button small" type="button" id="randomizeButton">Randomize</button>
+                <button class="button small" type="button" id="insertDateButton" data-i18n="button.insert_date">Insert date</button>
+                <button class="button small" type="button" id="randomizeButton" data-i18n="button.randomize">Randomize</button>
               </div>
             </div>
             <label class="field" for="watermarkText">
-              <span>Text</span>
+              <span data-i18n="watermark.text">Text</span>
               <textarea id="watermarkText" rows="2" spellcheck="false"></textarea>
             </label>
             <div class="control-grid">
               <label class="field" for="fontSize">
-                <span>Font size <output id="fontSizeValue"></output></span>
+                <span><span data-i18n="watermark.font_size">Font size</span> <output id="fontSizeValue"></output></span>
                 <input id="fontSize" type="range" min="18" max="120" step="1">
               </label>
               <label class="field" for="watermarkOpacity">
-                <span>Opacity <output id="opacityValue"></output></span>
+                <span><span data-i18n="watermark.opacity">Opacity</span> <output id="opacityValue"></output></span>
                 <input id="watermarkOpacity" type="range" min="0.05" max="0.75" step="0.01">
               </label>
               <label class="field" for="watermarkAngle">
-                <span>Angle <output id="angleValue"></output></span>
+                <span><span data-i18n="watermark.angle">Angle</span> <output id="angleValue"></output></span>
                 <input id="watermarkAngle" type="range" min="-60" max="60" step="1">
               </label>
               <label class="field" for="spacingX">
-                <span>Horizontal spacing <output id="spacingXValue"></output></span>
+                <span><span data-i18n="watermark.spacing_x">Horizontal spacing</span> <output id="spacingXValue"></output></span>
                 <input id="spacingX" type="range" min="120" max="720" step="10">
               </label>
               <label class="field" for="spacingY">
-                <span>Vertical spacing <output id="spacingYValue"></output></span>
+                <span><span data-i18n="watermark.spacing_y">Vertical spacing</span> <output id="spacingYValue"></output></span>
                 <input id="spacingY" type="range" min="70" max="420" step="10">
               </label>
               <label class="field" for="offsetX">
-                <span>Offset X <output id="offsetXValue"></output></span>
+                <span><span data-i18n="watermark.offset_x">Offset X</span> <output id="offsetXValue"></output></span>
                 <input id="offsetX" type="range" min="-240" max="240" step="5">
               </label>
               <label class="field" for="offsetY">
-                <span>Offset Y <output id="offsetYValue"></output></span>
+                <span><span data-i18n="watermark.offset_y">Offset Y</span> <output id="offsetYValue"></output></span>
                 <input id="offsetY" type="range" min="-240" max="240" step="5">
               </label>
               <label class="field swatch-field" for="watermarkColor">
-                <span>Color</span>
+                <span data-i18n="watermark.color">Color</span>
                 <input id="watermarkColor" type="color">
               </label>
             </div>
             <label class="check-field" for="watermarkBold">
               <input id="watermarkBold" type="checkbox">
-              <span>Bold watermark text</span>
+              <span data-i18n="watermark.bold">Bold watermark text</span>
             </label>
           </section>
 
           <section class="control-section" aria-labelledby="redactionTitle">
             <div class="section-heading">
-              <h3 id="redactionTitle">Redaction boxes</h3>
+              <h3 id="redactionTitle" data-i18n="redaction.title">Redaction boxes</h3>
               <div class="section-actions">
-                <button class="button small" type="button" id="removeBoxButton" disabled>Remove selected</button>
-                <button class="button small" type="button" id="clearBoxesButton" disabled>Clear boxes</button>
+                <button class="button small" type="button" id="removeBoxButton" disabled data-i18n="button.remove_selected">Remove selected</button>
+                <button class="button small" type="button" id="clearBoxesButton" disabled data-i18n="button.clear_boxes">Clear boxes</button>
               </div>
             </div>
             <div class="inline-fields">
               <label class="field swatch-field" for="redactionColor">
-                <span>Box color</span>
+                <span data-i18n="redaction.box_color">Box color</span>
                 <input id="redactionColor" type="color">
               </label>
               <div class="message compact-message" id="redactionMessage">No boxes.</div>
@@ -178,21 +186,23 @@
 
           <section class="control-section" aria-labelledby="exportTitle">
             <div class="section-heading">
-              <h3 id="exportTitle">Export</h3>
+              <h3 id="exportTitle" data-i18n="export.title">Export</h3>
             </div>
             <label class="field" for="jpegQuality">
-              <span>JPEG quality <output id="jpegQualityValue"></output></span>
+              <span><span data-i18n="export.jpeg_quality">JPEG quality</span> <output id="jpegQualityValue"></output></span>
               <input id="jpegQuality" type="range" min="0.50" max="1" step="0.01">
             </label>
-            <div class="export-note">Exports bake in crop, watermark, and solid redactions. Metadata/EXIF is removed.</div>
+            <div class="export-note" data-i18n="export.note">Exports bake in crop, watermark, and solid redactions. Metadata/EXIF is removed.</div>
           </section>
         </div>
       </article>
     </section>
 
-    <footer>Standalone file. No CDN, external fonts, tracking, uploads, or network calls.</footer>
+    <footer data-i18n="footer.disclaimer">Standalone file. No CDN, external fonts, tracking, uploads, or network calls.</footer>
   </div>
 
+  <script>
+{{IDPROTECT_LOCALES_JS}}  </script>
   <script>
 {{IDPROTECT_APP_JS}}  </script>
 </body>

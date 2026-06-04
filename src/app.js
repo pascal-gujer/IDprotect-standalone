@@ -6,6 +6,9 @@
   const MIN_CROP_SIDE = 32;
   const MIN_BOX_SIDE = 8;
   const REDACTION_HANDLE_SIZE = 12;
+  const LOCALE_STORAGE_KEY = "idprotect.locale";
+  const DEFAULT_LOCALE = "en";
+  const SUPPORTED_LOCALES = ["en", "de", "fr"];
 
   const DEFAULTS = {
     watermark: {
@@ -30,6 +33,7 @@
   const elements = {
     statusDot: document.getElementById("statusDot"),
     statusText: document.getElementById("statusText"),
+    languageSelect: document.getElementById("languageSelect"),
     resetButton: document.getElementById("resetButton"),
     exportJpegButton: document.getElementById("exportJpegButton"),
     exportPngButton: document.getElementById("exportPngButton"),
@@ -89,6 +93,15 @@
     toolMode: DEFAULTS.toolMode,
     interaction: null,
     renderQueued: false,
+    locales: {},
+    locale: DEFAULT_LOCALE,
+    statusKey: "status.ready",
+    statusVars: {},
+    statusKind: "idle",
+    imageMessageKey: "image.no_loaded",
+    imageMessageVars: {},
+    imageMessageKind: "idle",
+    watermarkIsDefault: true,
     error: false
   };
 
@@ -97,8 +110,12 @@
   function cloneWatermarkDefaults() {
     return {
       ...DEFAULTS.watermark,
-      text: `Only for Hotel XYZ - ${formatDisplayDate(new Date())}`
+      text: defaultWatermarkText()
     };
+  }
+
+  function defaultWatermarkText() {
+    return t("watermark.default_text", { date: formatDisplayDate(new Date()) });
   }
 
   function clamp(value, min, max) {
@@ -127,16 +144,111 @@
     return cleaned.slice(0, 48);
   }
 
-  function setStatus(text, kind = "idle") {
-    elements.statusText.textContent = text;
-    elements.statusDot.classList.toggle("ready", kind === "ready");
-    elements.statusDot.classList.toggle("error", kind === "error");
-    state.error = kind === "error";
+  function normalizeLocale(locale) {
+    const value = String(locale || "").trim().toLowerCase();
+    if (!value) return null;
+    if (SUPPORTED_LOCALES.includes(value)) return value;
+    const base = value.split(/[-_]/)[0];
+    return SUPPORTED_LOCALES.includes(base) ? base : null;
   }
 
-  function setMessage(node, text, kind = "idle") {
-    node.textContent = text;
-    node.classList.toggle("error", kind === "error");
+  function resolveLocale(locale) {
+    const normalized = normalizeLocale(locale);
+    return normalized && state.locales[normalized] ? normalized : DEFAULT_LOCALE;
+  }
+
+  function getInitialLocale() {
+    const candidates = [];
+    try {
+      candidates.push(new URLSearchParams(window.location.search).get("lang"));
+    } catch (_error) {
+      // file:// URLs can make URL parsing surprisingly strict in older browsers.
+    }
+    try {
+      candidates.push(window.localStorage.getItem(LOCALE_STORAGE_KEY));
+    } catch (_error) {
+      // Some privacy modes block localStorage for file:// pages.
+    }
+    if (Array.isArray(navigator.languages)) {
+      candidates.push(...navigator.languages);
+    }
+    candidates.push(navigator.language);
+
+    for (const candidate of candidates) {
+      const normalized = normalizeLocale(candidate);
+      if (normalized && state.locales[normalized]) return normalized;
+    }
+    return DEFAULT_LOCALE;
+  }
+
+  function interpolate(template, vars) {
+    return String(template).replace(/\{([a-z0-9_]+)\}/gi, (match, key) => {
+      return Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : match;
+    });
+  }
+
+  function t(key, vars = {}) {
+    const localeMap = state.locales[state.locale] || {};
+    const fallbackMap = state.locales[DEFAULT_LOCALE] || {};
+    return interpolate(localeMap[key] || fallbackMap[key] || key, vars);
+  }
+
+  function applyI18nToDom() {
+    document.documentElement.lang = state.locale;
+    document.title = t("app.title");
+    document.querySelectorAll("[data-i18n]").forEach((node) => {
+      node.textContent = t(node.dataset.i18n);
+    });
+    document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
+      node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel));
+    });
+  }
+
+  function setLocale(locale, persist) {
+    state.locale = resolveLocale(locale);
+    if (persist) {
+      try {
+        window.localStorage.setItem(LOCALE_STORAGE_KEY, state.locale);
+      } catch (_error) {
+        // Keeping the selector working matters more than persistence.
+      }
+    }
+    elements.languageSelect.value = state.locale;
+    if (state.watermarkIsDefault) {
+      state.watermark.text = defaultWatermarkText();
+    }
+    applyI18nToDom();
+    syncControls();
+    refreshStatusText();
+    refreshImageMessage();
+    updateEditMessage();
+    requestRender();
+  }
+
+  function setStatus(key, vars = {}, kind = "idle") {
+    state.statusKey = key;
+    state.statusVars = vars;
+    state.statusKind = kind;
+    refreshStatusText();
+  }
+
+  function refreshStatusText() {
+    elements.statusText.textContent = t(state.statusKey, state.statusVars);
+    elements.statusDot.classList.toggle("ready", state.statusKind === "ready");
+    elements.statusDot.classList.toggle("error", state.statusKind === "error");
+    state.error = state.statusKind === "error";
+  }
+
+  function setImageMessage(key, vars = {}, kind = "idle") {
+    state.imageMessageKey = key;
+    state.imageMessageVars = vars;
+    state.imageMessageKind = kind;
+    refreshImageMessage();
+  }
+
+  function refreshImageMessage() {
+    elements.imageMessage.textContent = t(state.imageMessageKey, state.imageMessageVars);
+    elements.imageMessage.classList.toggle("error", state.imageMessageKind === "error");
   }
 
   function requestRender() {
@@ -188,9 +300,13 @@
     elements.clearBoxesButton.disabled = state.redactions.length === 0;
     elements.previewToolbar.hidden = state.toolMode !== "preview";
     elements.compareControl.hidden = state.previewMode !== "compare";
-    elements.redactionMessage.textContent = state.redactions.length
-      ? `${state.redactions.length} solid box${state.redactions.length === 1 ? "" : "es"}.`
-      : "No boxes.";
+    elements.redactionMessage.textContent = redactionCountText();
+  }
+
+  function redactionCountText() {
+    if (!state.redactions.length) return t("redaction.no_boxes");
+    const key = state.redactions.length === 1 ? "redaction.boxes_count_one" : "redaction.boxes_count_many";
+    return t(key, { count: state.redactions.length });
   }
 
   function updateModeButtons() {
@@ -212,18 +328,18 @@
 
   function updateEditMessage() {
     if (!state.image) {
-      elements.editMessage.textContent = "Crop first, then draw solid redaction boxes and export.";
+      elements.editMessage.textContent = t("edit.empty");
       return;
     }
     if (state.toolMode === "crop") {
-      elements.editMessage.textContent = "Drag the crop edges, corners, or interior. Drag outside the crop to create a new crop.";
+      elements.editMessage.textContent = t("edit.crop");
       return;
     }
     if (state.toolMode === "redact") {
-      elements.editMessage.textContent = "Draw a rectangle to redact. Drag a selected box to move it, drag corner handles to resize it, or double-click it to remove it.";
+      elements.editMessage.textContent = t("edit.redact");
       return;
     }
-    elements.editMessage.textContent = "Preview shows the cropped export area with watermark and redactions baked in.";
+    elements.editMessage.textContent = t("edit.preview");
   }
 
   function resetAll() {
@@ -242,9 +358,10 @@
     state.previewMode = DEFAULTS.previewMode;
     state.toolMode = DEFAULTS.toolMode;
     state.interaction = null;
+    state.watermarkIsDefault = true;
     elements.fileInput.value = "";
-    setStatus("Ready. Load an image to begin.");
-    setMessage(elements.imageMessage, "No image loaded.");
+    setStatus("status.ready");
+    setImageMessage("image.no_loaded");
     syncControls();
     updateEditMessage();
     requestRender();
@@ -253,19 +370,19 @@
   async function loadImageFile(file) {
     if (!file) return;
     if (file.type === "image/svg+xml" || /\.svgz?$/i.test(file.name || "")) {
-      setStatus("SVG imports are not accepted for this privacy-focused tool.", "error");
-      setMessage(elements.imageMessage, "Choose a raster image such as PNG, JPEG, AVIF, GIF, BMP, or WebP.", "error");
+      setStatus("status.error.svg", {}, "error");
+      setImageMessage("image.error.svg", {}, "error");
       return;
     }
     const looksLikeImage = file.type.startsWith("image/") || IMAGE_NAME_RE.test(file.name || "");
     if (!looksLikeImage) {
-      setStatus("The selected file is not a supported image.", "error");
-      setMessage(elements.imageMessage, "Choose a browser-supported image file.", "error");
+      setStatus("status.error.unsupported", {}, "error");
+      setImageMessage("image.error.unsupported", {}, "error");
       return;
     }
 
-    setStatus("Loading image...");
-    setMessage(elements.imageMessage, "Reading local file...");
+    setStatus("status.loading");
+    setImageMessage("image.reading");
 
     try {
       const bitmap = await decodeImage(file);
@@ -285,16 +402,17 @@
       state.toolMode = "crop";
       fitDefaultsToImage();
       syncControls();
-      setStatus("Image loaded. Edit locally and export when ready.", "ready");
-      setMessage(
-        elements.imageMessage,
-        `${state.image.name} - ${bitmap.width} x ${bitmap.height}px. Export will strip metadata/EXIF.`
-      );
+      setStatus("status.loaded", {}, "ready");
+      setImageMessage("image.loaded", {
+        name: state.image.name,
+        width: bitmap.width,
+        height: bitmap.height
+      });
       updateEditMessage();
       requestRender();
     } catch (error) {
-      setStatus("Could not decode this image.", "error");
-      setMessage(elements.imageMessage, error && error.message ? error.message : "The browser could not open this image.", "error");
+      setStatus("status.error.decode", {}, "error");
+      setImageMessage("image.error.decode", {}, "error");
     }
   }
 
@@ -368,6 +486,7 @@
     const trailing = after.length > 0 && !/^\s/.test(after) ? " " : "";
     const next = `${before}${leading}${dateText}${trailing}${after}`;
     state.watermark.text = next;
+    state.watermarkIsDefault = false;
     input.value = next;
     const caret = start + leading.length + dateText.length;
     input.setSelectionRange(caret, caret);
@@ -1168,7 +1287,7 @@
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setStatus(`Exported ${ext.toUpperCase()} with metadata/EXIF stripped.`, "ready");
+    setStatus("status.exported", { format: ext.toUpperCase() }, "ready");
   }
 
   function canvasToBlob(canvas, mimeType, quality) {
@@ -1190,6 +1309,7 @@
   }
 
   function bindEvents() {
+    elements.languageSelect.addEventListener("change", () => setLocale(elements.languageSelect.value, true));
     elements.pickButton.addEventListener("click", () => elements.fileInput.click());
     elements.dropzone.addEventListener("click", () => elements.fileInput.click());
     elements.dropzone.addEventListener("keydown", (event) => {
@@ -1246,6 +1366,7 @@
 
     elements.watermarkText.addEventListener("input", () => {
       state.watermark.text = elements.watermarkText.value;
+      state.watermarkIsDefault = false;
       requestRender();
     });
     bindNumericControl(elements.fontSize, "fontSize", Number);
@@ -1284,7 +1405,7 @@
     elements.removeBoxButton.addEventListener("click", removeSelectedBox);
     elements.clearBoxesButton.addEventListener("click", clearBoxes);
     elements.resetButton.addEventListener("click", () => {
-      if (state.image && !window.confirm("Discard the loaded image, crop, redactions, and watermark settings?")) return;
+      if (state.image && !window.confirm(t("confirm.reset"))) return;
       resetAll();
     });
     elements.exportPngButton.addEventListener("click", () => exportImage("image/png"));
@@ -1316,9 +1437,10 @@
     });
   }
 
+  state.locales = window.IDPROTECT_EMBEDDED_LOCALES || {};
+  state.locale = getInitialLocale();
   state.watermark = cloneWatermarkDefaults();
   bindEvents();
-  syncControls();
-  updateEditMessage();
+  setLocale(state.locale, false);
   requestRender();
 })();
