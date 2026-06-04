@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; media-src 'none'; worker-src 'none'; child-src 'none'; form-action 'none'; base-uri 'none'">
+  <title>ID Protect Offline</title>
+  <style>
+{{IDPROTECT_CSS}}  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="github-ribbon" href="https://github.com/sponsors/pascal-gujer" target="_blank" rel="noopener noreferrer" aria-label="Sponsor this project on GitHub">
+    <svg class="github-ribbon-heart" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M8 14s-6-3.6-6-8.1C2 3.7 3.5 2 5.5 2c1.1 0 2 .5 2.5 1.3C8.5 2.5 9.4 2 10.5 2c2 0 3.5 1.7 3.5 3.9C14 10.4 8 14 8 14z"></path>
+    </svg>
+    <span>Sponsor</span>
+  </a>
+  <div class="app-shell" id="main">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">ID</div>
+        <div>
+          <h1>ID Protect Offline</h1>
+          <p class="subtitle">Watermark and redact ID scans before sharing.</p>
+        </div>
+      </div>
+      <div class="privacy-pill">Local browser processing - no uploads, no external resources.</div>
+    </header>
+
+    <section class="notice" aria-label="Privacy and export notice">
+      <div>
+        <strong>Private by design</strong>
+        <p>Images stay on this device. Exported PNG/JPEG files are redrawn through Canvas, so original metadata and EXIF are not copied.</p>
+      </div>
+      <details>
+        <summary>Export details</summary>
+        <p>The downloaded file contains the cropped pixels, solid redactions, and repeated watermark. The source file is never uploaded or modified.</p>
+      </details>
+    </section>
+
+    <section class="action-bar" aria-label="Session controls">
+      <div class="status-line">
+        <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+        <span id="statusText">Ready. Load an image to begin.</span>
+      </div>
+      <div class="actions">
+        <button class="button" type="button" id="resetButton">Clear all</button>
+        <button class="button" type="button" id="exportJpegButton" disabled>Export JPEG</button>
+        <button class="button primary" type="button" id="exportPngButton" disabled>Export PNG</button>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <article class="panel image-panel" aria-labelledby="imageTitle">
+        <div class="panel-header">
+          <h2 id="imageTitle">1. Load image</h2>
+          <button class="button" type="button" id="pickButton">Choose image</button>
+        </div>
+        <div class="panel-body">
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Drop an image or choose a file">
+            <div>
+              <strong>Drop ID or passport scan</strong>
+              <span>PNG, JPEG, AVIF, GIF, BMP, or any browser-supported image.</span>
+            </div>
+          </div>
+          <input class="sr-only" id="fileInput" type="file" accept="image/png,image/jpeg,image/avif,image/gif,image/bmp,image/webp">
+          <div class="message" id="imageMessage">No image loaded.</div>
+        </div>
+      </article>
+
+      <article class="panel preview-panel" aria-labelledby="previewTitle">
+        <div class="panel-header">
+          <h2 id="previewTitle">2. Edit preview</h2>
+          <div class="segmented" aria-label="Editing mode">
+            <button class="segment active" type="button" id="modeCropButton" data-mode="crop" aria-pressed="true">Crop</button>
+            <button class="segment" type="button" id="modeRedactButton" data-mode="redact" aria-pressed="false">Redact</button>
+            <button class="segment" type="button" id="modePreviewButton" data-mode="preview" aria-pressed="false">Preview</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="preview-toolbar">
+            <label class="field compact" for="previewMode">
+              <span>View</span>
+              <select class="select-control" id="previewMode">
+                <option value="after">After</option>
+                <option value="before">Before</option>
+                <option value="compare">Compare</option>
+              </select>
+            </label>
+            <label class="field compact compare-control" for="compareSplit" id="compareControl">
+              <span>Split</span>
+              <input id="compareSplit" type="range" min="5" max="95" value="50">
+            </label>
+          </div>
+          <div class="canvas-frame" id="canvasFrame">
+            <canvas id="previewCanvas" aria-label="Image preview"></canvas>
+            <div class="empty-state" id="emptyPreview">Load an image to see the live preview.</div>
+          </div>
+          <div class="message" id="editMessage">Crop first, then draw solid redaction boxes and export.</div>
+        </div>
+      </article>
+
+      <article class="panel controls-panel" aria-labelledby="controlsTitle">
+        <div class="panel-header">
+          <h2 id="controlsTitle">3. Protect and export</h2>
+        </div>
+        <div class="panel-body controls-stack">
+          <section class="control-section" aria-labelledby="watermarkTitle">
+            <div class="section-heading">
+              <h3 id="watermarkTitle">Watermark</h3>
+              <div class="section-actions">
+                <button class="button small" type="button" id="insertDateButton">Insert date</button>
+                <button class="button small" type="button" id="randomizeButton">Randomize</button>
+              </div>
+            </div>
+            <label class="field" for="watermarkText">
+              <span>Text</span>
+              <textarea id="watermarkText" rows="2" spellcheck="false"></textarea>
+            </label>
+            <div class="control-grid">
+              <label class="field" for="fontSize">
+                <span>Font size <output id="fontSizeValue"></output></span>
+                <input id="fontSize" type="range" min="18" max="120" step="1">
+              </label>
+              <label class="field" for="watermarkOpacity">
+                <span>Opacity <output id="opacityValue"></output></span>
+                <input id="watermarkOpacity" type="range" min="0.05" max="0.75" step="0.01">
+              </label>
+              <label class="field" for="watermarkAngle">
+                <span>Angle <output id="angleValue"></output></span>
+                <input id="watermarkAngle" type="range" min="-60" max="60" step="1">
+              </label>
+              <label class="field" for="spacingX">
+                <span>Horizontal spacing <output id="spacingXValue"></output></span>
+                <input id="spacingX" type="range" min="120" max="720" step="10">
+              </label>
+              <label class="field" for="spacingY">
+                <span>Vertical spacing <output id="spacingYValue"></output></span>
+                <input id="spacingY" type="range" min="70" max="420" step="10">
+              </label>
+              <label class="field" for="offsetX">
+                <span>Offset X <output id="offsetXValue"></output></span>
+                <input id="offsetX" type="range" min="-240" max="240" step="5">
+              </label>
+              <label class="field" for="offsetY">
+                <span>Offset Y <output id="offsetYValue"></output></span>
+                <input id="offsetY" type="range" min="-240" max="240" step="5">
+              </label>
+              <label class="field swatch-field" for="watermarkColor">
+                <span>Color</span>
+                <input id="watermarkColor" type="color">
+              </label>
+            </div>
+            <label class="check-field" for="watermarkBold">
+              <input id="watermarkBold" type="checkbox">
+              <span>Bold watermark text</span>
+            </label>
+          </section>
+
+          <section class="control-section" aria-labelledby="redactionTitle">
+            <div class="section-heading">
+              <h3 id="redactionTitle">Redaction boxes</h3>
+              <div class="section-actions">
+                <button class="button small" type="button" id="removeBoxButton" disabled>Remove selected</button>
+                <button class="button small" type="button" id="clearBoxesButton" disabled>Clear boxes</button>
+              </div>
+            </div>
+            <div class="inline-fields">
+              <label class="field swatch-field" for="redactionColor">
+                <span>Box color</span>
+                <input id="redactionColor" type="color">
+              </label>
+              <div class="message compact-message" id="redactionMessage">No boxes.</div>
+            </div>
+          </section>
+
+          <section class="control-section" aria-labelledby="exportTitle">
+            <div class="section-heading">
+              <h3 id="exportTitle">Export</h3>
+            </div>
+            <label class="field" for="jpegQuality">
+              <span>JPEG quality <output id="jpegQualityValue"></output></span>
+              <input id="jpegQuality" type="range" min="0.50" max="1" step="0.01">
+            </label>
+            <div class="export-note">Exports bake in crop, watermark, and solid redactions. Metadata/EXIF is removed.</div>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <footer>Standalone file. No CDN, external fonts, tracking, uploads, or network calls.</footer>
+  </div>
+
+  <script>
+{{IDPROTECT_APP_JS}}  </script>
+</body>
+</html>
