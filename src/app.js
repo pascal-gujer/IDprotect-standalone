@@ -703,8 +703,8 @@
     targetCtx.fillStyle = "#ffffff";
     targetCtx.fillRect(0, 0, crop.w, crop.h);
     targetCtx.drawImage(state.image.bitmap, crop.x, crop.y, crop.w, crop.h, 0, 0, crop.w, crop.h);
-    drawWatermark(targetCtx, crop.w, crop.h);
     drawRedactions(targetCtx, crop.x, crop.y, crop.w, crop.h);
+    drawWatermark(targetCtx, crop.w, crop.h);
     if (options && options.showSelection) {
       drawRedactionSelection(targetCtx, crop.x, crop.y, scale);
     }
@@ -733,8 +733,8 @@
 
     const metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
     const { blockWidth, blockHeight, lineMetrics } = metrics;
-    const effectiveSpacingX = Math.max(spacingX, blockWidth + fontSize * 0.8);
-    const effectiveSpacingY = Math.max(spacingY, blockHeight + fontSize * 0.6);
+    const effectiveSpacingX = Math.max(spacingX, blockWidth + fontSize * 0.35);
+    const effectiveSpacingY = Math.max(spacingY, blockHeight + fontSize * 0.45);
     const diagonal = Math.sqrt(width * width + height * height) + blockWidth + blockHeight;
     targetCtx.translate(width / 2, height / 2);
     targetCtx.rotate(angle);
@@ -1319,8 +1319,8 @@
     outputCtx.fillStyle = "#ffffff";
     outputCtx.fillRect(0, 0, output.width, output.height);
     outputCtx.drawImage(state.image.bitmap, crop.x, crop.y, crop.w, crop.h, 0, 0, output.width, output.height);
-    drawWatermark(outputCtx, output.width, output.height);
     drawRedactions(outputCtx, crop.x, crop.y, crop.w, crop.h);
+    drawWatermark(outputCtx, output.width, output.height);
 
     const quality = mimeType === "image/jpeg" ? state.jpegQuality : undefined;
     const blob = await canvasToBlob(output, mimeType, quality);
@@ -1411,7 +1411,7 @@
       state.watermarkIsDefault = false;
       requestRender();
     });
-    bindNumericControl(elements.fontSize, "fontSize", Number);
+    bindFontSizeControl();
     bindNumericControl(elements.watermarkOpacity, "opacity", Number);
     bindNumericControl(elements.watermarkAngle, "angle", (value) => Math.round(Number(value)));
     bindNumericControl(elements.spacingX, "spacingX", (value) => Math.round(Number(value)));
@@ -1477,6 +1477,30 @@
       updateReadouts();
       requestRender();
     });
+  }
+
+  function bindFontSizeControl() {
+    elements.fontSize.addEventListener("input", () => {
+      const previous = Number(state.watermark.fontSize) || DEFAULTS.watermark.fontSize;
+      const next = Number(elements.fontSize.value);
+      if (!Number.isFinite(next) || next <= 0) return;
+      const ratio = previous > 0 ? next / previous : 1;
+      state.watermark.fontSize = next;
+      if (Number.isFinite(ratio) && ratio > 0) {
+        state.watermark.spacingX = clampControlValue(elements.spacingX, Math.round(state.watermark.spacingX * ratio));
+        state.watermark.spacingY = clampControlValue(elements.spacingY, Math.round(state.watermark.spacingY * ratio));
+        elements.spacingX.value = String(state.watermark.spacingX);
+        elements.spacingY.value = String(state.watermark.spacingY);
+      }
+      updateReadouts();
+      requestRender();
+    });
+  }
+
+  function clampControlValue(input, value) {
+    const min = Number(input.min);
+    const max = Number(input.max);
+    return clamp(value, Number.isFinite(min) ? min : value, Number.isFinite(max) ? max : value);
   }
 
   state.locales = window.IDPROTECT_EMBEDDED_LOCALES || {};
