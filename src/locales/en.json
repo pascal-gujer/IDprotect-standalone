@@ -50,7 +50,6 @@
   "preview.after": "After",
   "preview.before": "Before",
   "preview.compare": "Compare",
-  "preview.split": "Split",
   "preview.canvas.aria": "Image preview",
   "preview.empty": "Load an image to see the live preview.",
   "edit.empty": "Crop first, then draw solid redaction boxes and export.",

@@ -820,10 +820,6 @@ footer {
                 <option value="compare" data-i18n="preview.compare">Compare</option>
               </select>
             </label>
-            <label class="field compact compare-control" for="compareSplit" id="compareControl">
-              <span data-i18n="preview.split">Split</span>
-              <input id="compareSplit" type="range" min="5" max="95" value="50">
-            </label>
           </div>
           <div class="canvas-frame" id="canvasFrame">
             <canvas id="previewCanvas" data-i18n-aria-label="preview.canvas.aria" aria-label="Image preview"></canvas>
@@ -926,7 +922,7 @@ footer {
 
   <script>
 /* Embedded locale resources for ID Protect Offline. */
-window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","sponsor.aria":"Sponsor this project on GitHub","sponsor.label":"Sponsor","brand.title":"ID Protect Offline","brand.subtitle":"Watermark and redact ID scans before sharing.","privacy.pill":"Local browser processing - no uploads, no external resources.","language.label":"Language","language.option.en":"English","language.option.de":"Deutsch","language.option.fr":"Français","a11y.skip_to_content":"Skip to content","notice.aria":"Privacy and export notice","notice.title":"Private by design","notice.body":"Images stay on this device. Exported PNG/JPEG files are redrawn through Canvas, so original metadata and EXIF are not copied.","notice.details.summary":"Export details","notice.details.body":"The downloaded file contains the cropped pixels, solid redactions, and repeated watermark. The source file is never uploaded or modified.","session.controls.aria":"Session controls","status.ready":"Ready. Load an image to begin.","status.loading":"Loading image...","status.loaded":"Image loaded. Edit locally and export when ready.","status.exported":"Exported {format} with metadata/EXIF stripped.","status.error.svg":"SVG imports are not accepted for this privacy-focused tool.","status.error.unsupported":"The selected file is not a supported image.","status.error.decode":"Could not decode this image.","button.clear_all":"Clear all","button.export_jpeg":"Export JPEG","button.export_png":"Export PNG","button.choose_image":"Choose image","button.insert_date":"Insert date","button.randomize":"Randomize","button.remove_selected":"Remove selected","button.clear_boxes":"Clear boxes","image.title":"1. Load image","image.dropzone.aria":"Drop an image or choose a file","image.dropzone.title":"Drop ID or passport scan","image.dropzone.hint":"PNG, JPEG, AVIF, GIF, BMP, or any browser-supported image.","image.no_loaded":"No image loaded.","image.reading":"Reading local file...","image.loaded":"{name} - {width} x {height}px. Export will strip metadata/EXIF.","image.error.svg":"Choose a raster image such as PNG, JPEG, AVIF, GIF, BMP, or WebP.","image.error.unsupported":"Choose a browser-supported image file.","image.error.decode":"The browser could not open this image.","preview.title":"2. Edit preview","mode.aria":"Editing mode","mode.crop":"Crop","mode.redact":"Redact","mode.preview":"Preview","preview.view":"View","preview.after":"After","preview.before":"Before","preview.compare":"Compare","preview.split":"Split","preview.canvas.aria":"Image preview","preview.empty":"Load an image to see the live preview.","edit.empty":"Crop first, then draw solid redaction boxes and export.","edit.crop":"Drag the crop edges, corners, or interior. Drag outside the crop to create a new crop.","edit.redact":"Draw a rectangle to redact. Drag a selected box to move it, drag corner handles to resize it, or double-click it to remove it.","edit.preview":"Preview shows the cropped export area with watermark and redactions baked in.","controls.title":"3. Protect and export","watermark.title":"Watermark","watermark.text":"Text","watermark.default_text":"Only for Hotel XYZ - {date}","watermark.font_size":"Font size","watermark.opacity":"Opacity","watermark.angle":"Angle","watermark.spacing_x":"Horizontal spacing","watermark.spacing_y":"Vertical spacing","watermark.offset_x":"Offset X","watermark.offset_y":"Offset Y","watermark.color":"Color","watermark.bold":"Bold watermark text","redaction.title":"Redaction boxes","redaction.box_color":"Box color","redaction.no_boxes":"No boxes.","redaction.boxes_count_one":"1 solid box.","redaction.boxes_count_many":"{count} solid boxes.","export.title":"Export","export.jpeg_quality":"JPEG quality","export.note":"Exports bake in crop, watermark, and solid redactions. Metadata/EXIF is removed.","confirm.reset":"Discard the loaded image, crop, redactions, and watermark settings?","footer.disclaimer":"Standalone file. No CDN, external fonts, tracking, uploads, or network calls."},"de":{"app.title":"ID Protect Offline","sponsor.aria":"Dieses Projekt auf GitHub sponsern","sponsor.label":"Sponsor","brand.title":"ID Protect Offline","brand.subtitle":"ID-Scans vor dem Teilen mit Wasserzeichen und Schwärzungen schützen.","privacy.pill":"Lokale Verarbeitung im Browser - keine Uploads, keine externen Ressourcen.","language.label":"Sprache","language.option.en":"English","language.option.de":"Deutsch","language.option.fr":"Français","a11y.skip_to_content":"Zum Inhalt springen","notice.aria":"Datenschutz- und Exporthinweis","notice.title":"Privat konstruiert","notice.body":"Bilder bleiben auf diesem Gerät. Exportierte PNG/JPEG-Dateien werden über Canvas neu gezeichnet, daher werden ursprüngliche Metadaten und EXIF nicht kopiert.","notice.details.summary":"Exportdetails","notice.details.body":"Die heruntergeladene Datei enthält die zugeschnittenen Pixel, feste Schwärzungen und das wiederholte Wasserzeichen. Die Quelldatei wird nie hochgeladen oder verändert.","session.controls.aria":"Sitzungssteuerung","status.ready":"Bereit. Bild laden, um zu beginnen.","status.loading":"Bild wird geladen...","status.loaded":"Bild geladen. Lokal bearbeiten und anschließend exportieren.","status.exported":"{format} exportiert; Metadaten/EXIF wurden entfernt.","status.error.svg":"SVG-Importe werden für dieses datenschutzorientierte Tool nicht akzeptiert.","status.error.unsupported":"Die ausgewählte Datei ist kein unterstütztes Bild.","status.error.decode":"Dieses Bild konnte nicht dekodiert werden.","button.clear_all":"Alles löschen","button.export_jpeg":"JPEG exportieren","button.export_png":"PNG exportieren","button.choose_image":"Bild wählen","button.insert_date":"Datum einfügen","button.randomize":"Zufällig","button.remove_selected":"Auswahl entfernen","button.clear_boxes":"Boxen löschen","image.title":"1. Bild laden","image.dropzone.aria":"Bild ablegen oder Datei auswählen","image.dropzone.title":"ID- oder Pass-Scan ablegen","image.dropzone.hint":"PNG, JPEG, AVIF, GIF, BMP oder ein anderes vom Browser unterstütztes Bild.","image.no_loaded":"Kein Bild geladen.","image.reading":"Lokale Datei wird gelesen...","image.loaded":"{name} - {width} x {height}px. Beim Export werden Metadaten/EXIF entfernt.","image.error.svg":"Wähle ein Rasterbild wie PNG, JPEG, AVIF, GIF, BMP oder WebP.","image.error.unsupported":"Wähle eine vom Browser unterstützte Bilddatei.","image.error.decode":"Der Browser konnte dieses Bild nicht öffnen.","preview.title":"2. Vorschau bearbeiten","mode.aria":"Bearbeitungsmodus","mode.crop":"Zuschneiden","mode.redact":"Schwärzen","mode.preview":"Vorschau","preview.view":"Ansicht","preview.after":"Nachher","preview.before":"Vorher","preview.compare":"Vergleich","preview.split":"Teilung","preview.canvas.aria":"Bildvorschau","preview.empty":"Lade ein Bild, um die Live-Vorschau zu sehen.","edit.empty":"Zuerst zuschneiden, dann feste Schwärzungsboxen zeichnen und exportieren.","edit.crop":"Ziehe Kanten, Ecken oder den Innenbereich des Zuschnitts. Ziehe außerhalb des Zuschnitts, um einen neuen Zuschnitt zu erstellen.","edit.redact":"Zeichne ein Rechteck zum Schwärzen. Ziehe eine ausgewählte Box zum Verschieben, ziehe Eckgriffe zum Skalieren oder doppelklicke sie zum Entfernen.","edit.preview":"Die Vorschau zeigt den zugeschnittenen Exportbereich mit eingebranntem Wasserzeichen und Schwärzungen.","controls.title":"3. Schützen und exportieren","watermark.title":"Wasserzeichen","watermark.text":"Text","watermark.default_text":"Nur für Hotel XYZ - {date}","watermark.font_size":"Schriftgröße","watermark.opacity":"Deckkraft","watermark.angle":"Winkel","watermark.spacing_x":"Horizontaler Abstand","watermark.spacing_y":"Vertikaler Abstand","watermark.offset_x":"Versatz X","watermark.offset_y":"Versatz Y","watermark.color":"Farbe","watermark.bold":"Wasserzeichen fett","redaction.title":"Schwärzungsboxen","redaction.box_color":"Boxfarbe","redaction.no_boxes":"Keine Boxen.","redaction.boxes_count_one":"1 feste Box.","redaction.boxes_count_many":"{count} feste Boxen.","export.title":"Export","export.jpeg_quality":"JPEG-Qualität","export.note":"Exporte enthalten Zuschnitt, Wasserzeichen und feste Schwärzungen. Metadaten/EXIF werden entfernt.","confirm.reset":"Geladenes Bild, Zuschnitt, Schwärzungen und Wasserzeichen-Einstellungen verwerfen?","footer.disclaimer":"Eigenständige Datei. Kein CDN, keine externen Schriften, kein Tracking, keine Uploads und keine Netzwerkaufrufe."},"fr":{"app.title":"ID Protect Offline","sponsor.aria":"Soutenir ce projet sur GitHub","sponsor.label":"Sponsor","brand.title":"ID Protect Offline","brand.subtitle":"Ajoutez un filigrane et masquez les scans d'identité avant partage.","privacy.pill":"Traitement local dans le navigateur - aucun téléversement, aucune ressource externe.","language.label":"Langue","language.option.en":"English","language.option.de":"Deutsch","language.option.fr":"Français","a11y.skip_to_content":"Aller au contenu","notice.aria":"Note de confidentialité et d'export","notice.title":"Conçu pour rester privé","notice.body":"Les images restent sur cet appareil. Les fichiers PNG/JPEG exportés sont redessinés avec Canvas, donc les métadonnées et EXIF d'origine ne sont pas copiés.","notice.details.summary":"Détails d'export","notice.details.body":"Le fichier téléchargé contient les pixels recadrés, les masquages pleins et le filigrane répété. Le fichier source n'est jamais téléversé ni modifié.","session.controls.aria":"Commandes de session","status.ready":"Prêt. Chargez une image pour commencer.","status.loading":"Chargement de l'image...","status.loaded":"Image chargée. Modifiez localement puis exportez.","status.exported":"{format} exporté avec métadonnées/EXIF supprimés.","status.error.svg":"Les imports SVG ne sont pas acceptés pour cet outil axé sur la confidentialité.","status.error.unsupported":"Le fichier sélectionné n'est pas une image prise en charge.","status.error.decode":"Impossible de décoder cette image.","button.clear_all":"Tout effacer","button.export_jpeg":"Exporter JPEG","button.export_png":"Exporter PNG","button.choose_image":"Choisir une image","button.insert_date":"Insérer la date","button.randomize":"Aléatoire","button.remove_selected":"Supprimer la sélection","button.clear_boxes":"Effacer les zones","image.title":"1. Charger l'image","image.dropzone.aria":"Déposer une image ou choisir un fichier","image.dropzone.title":"Déposer un scan d'identité ou de passeport","image.dropzone.hint":"PNG, JPEG, AVIF, GIF, BMP ou toute image prise en charge par le navigateur.","image.no_loaded":"Aucune image chargée.","image.reading":"Lecture du fichier local...","image.loaded":"{name} - {width} x {height}px. L'export supprimera les métadonnées/EXIF.","image.error.svg":"Choisissez une image matricielle comme PNG, JPEG, AVIF, GIF, BMP ou WebP.","image.error.unsupported":"Choisissez un fichier image pris en charge par le navigateur.","image.error.decode":"Le navigateur n'a pas pu ouvrir cette image.","preview.title":"2. Aperçu d'édition","mode.aria":"Mode d'édition","mode.crop":"Recadrer","mode.redact":"Masquer","mode.preview":"Aperçu","preview.view":"Vue","preview.after":"Après","preview.before":"Avant","preview.compare":"Comparer","preview.split":"Séparation","preview.canvas.aria":"Aperçu de l'image","preview.empty":"Chargez une image pour afficher l'aperçu.","edit.empty":"Recadrez d'abord, puis dessinez des zones de masquage pleines et exportez.","edit.crop":"Faites glisser les bords, les coins ou l'intérieur du recadrage. Glissez hors du recadrage pour en créer un nouveau.","edit.redact":"Dessinez un rectangle pour masquer. Glissez une zone sélectionnée pour la déplacer, glissez ses poignées d'angle pour la redimensionner ou double-cliquez dessus pour la supprimer.","edit.preview":"L'aperçu montre la zone d'export recadrée avec filigrane et masquages intégrés.","controls.title":"3. Protéger et exporter","watermark.title":"Filigrane","watermark.text":"Texte","watermark.default_text":"Uniquement pour Hotel XYZ - {date}","watermark.font_size":"Taille de police","watermark.opacity":"Opacité","watermark.angle":"Angle","watermark.spacing_x":"Espacement horizontal","watermark.spacing_y":"Espacement vertical","watermark.offset_x":"Décalage X","watermark.offset_y":"Décalage Y","watermark.color":"Couleur","watermark.bold":"Texte du filigrane en gras","redaction.title":"Zones de masquage","redaction.box_color":"Couleur des zones","redaction.no_boxes":"Aucune zone.","redaction.boxes_count_one":"1 zone pleine.","redaction.boxes_count_many":"{count} zones pleines.","export.title":"Export","export.jpeg_quality":"Qualité JPEG","export.note":"Les exports intègrent recadrage, filigrane et masquages pleins. Les métadonnées/EXIF sont supprimés.","confirm.reset":"Supprimer l'image chargée, le recadrage, les masquages et les réglages du filigrane ?","footer.disclaimer":"Fichier autonome. Aucun CDN, police externe, suivi, téléversement ni appel réseau."}};
+window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","sponsor.aria":"Sponsor this project on GitHub","sponsor.label":"Sponsor","brand.title":"ID Protect Offline","brand.subtitle":"Watermark and redact ID scans before sharing.","privacy.pill":"Local browser processing - no uploads, no external resources.","language.label":"Language","language.option.en":"English","language.option.de":"Deutsch","language.option.fr":"Français","a11y.skip_to_content":"Skip to content","notice.aria":"Privacy and export notice","notice.title":"Private by design","notice.body":"Images stay on this device. Exported PNG/JPEG files are redrawn through Canvas, so original metadata and EXIF are not copied.","notice.details.summary":"Export details","notice.details.body":"The downloaded file contains the cropped pixels, solid redactions, and repeated watermark. The source file is never uploaded or modified.","session.controls.aria":"Session controls","status.ready":"Ready. Load an image to begin.","status.loading":"Loading image...","status.loaded":"Image loaded. Edit locally and export when ready.","status.exported":"Exported {format} with metadata/EXIF stripped.","status.error.svg":"SVG imports are not accepted for this privacy-focused tool.","status.error.unsupported":"The selected file is not a supported image.","status.error.decode":"Could not decode this image.","button.clear_all":"Clear all","button.export_jpeg":"Export JPEG","button.export_png":"Export PNG","button.choose_image":"Choose image","button.insert_date":"Insert date","button.randomize":"Randomize","button.remove_selected":"Remove selected","button.clear_boxes":"Clear boxes","image.title":"1. Load image","image.dropzone.aria":"Drop an image or choose a file","image.dropzone.title":"Drop ID or passport scan","image.dropzone.hint":"PNG, JPEG, AVIF, GIF, BMP, or any browser-supported image.","image.no_loaded":"No image loaded.","image.reading":"Reading local file...","image.loaded":"{name} - {width} x {height}px. Export will strip metadata/EXIF.","image.error.svg":"Choose a raster image such as PNG, JPEG, AVIF, GIF, BMP, or WebP.","image.error.unsupported":"Choose a browser-supported image file.","image.error.decode":"The browser could not open this image.","preview.title":"2. Edit preview","mode.aria":"Editing mode","mode.crop":"Crop","mode.redact":"Redact","mode.preview":"Preview","preview.view":"View","preview.after":"After","preview.before":"Before","preview.compare":"Compare","preview.canvas.aria":"Image preview","preview.empty":"Load an image to see the live preview.","edit.empty":"Crop first, then draw solid redaction boxes and export.","edit.crop":"Drag the crop edges, corners, or interior. Drag outside the crop to create a new crop.","edit.redact":"Draw a rectangle to redact. Drag a selected box to move it, drag corner handles to resize it, or double-click it to remove it.","edit.preview":"Preview shows the cropped export area with watermark and redactions baked in.","controls.title":"3. Protect and export","watermark.title":"Watermark","watermark.text":"Text","watermark.default_text":"Only for Hotel XYZ - {date}","watermark.font_size":"Font size","watermark.opacity":"Opacity","watermark.angle":"Angle","watermark.spacing_x":"Horizontal spacing","watermark.spacing_y":"Vertical spacing","watermark.offset_x":"Offset X","watermark.offset_y":"Offset Y","watermark.color":"Color","watermark.bold":"Bold watermark text","redaction.title":"Redaction boxes","redaction.box_color":"Box color","redaction.no_boxes":"No boxes.","redaction.boxes_count_one":"1 solid box.","redaction.boxes_count_many":"{count} solid boxes.","export.title":"Export","export.jpeg_quality":"JPEG quality","export.note":"Exports bake in crop, watermark, and solid redactions. Metadata/EXIF is removed.","confirm.reset":"Discard the loaded image, crop, redactions, and watermark settings?","footer.disclaimer":"Standalone file. No CDN, external fonts, tracking, uploads, or network calls."},"de":{"app.title":"ID Protect Offline","sponsor.aria":"Dieses Projekt auf GitHub sponsern","sponsor.label":"Sponsor","brand.title":"ID Protect Offline","brand.subtitle":"ID-Scans vor dem Teilen mit Wasserzeichen und Schwärzungen schützen.","privacy.pill":"Lokale Verarbeitung im Browser - keine Uploads, keine externen Ressourcen.","language.label":"Sprache","language.option.en":"English","language.option.de":"Deutsch","language.option.fr":"Français","a11y.skip_to_content":"Zum Inhalt springen","notice.aria":"Datenschutz- und Exporthinweis","notice.title":"Privat konstruiert","notice.body":"Bilder bleiben auf diesem Gerät. Exportierte PNG/JPEG-Dateien werden über Canvas neu gezeichnet, daher werden ursprüngliche Metadaten und EXIF nicht kopiert.","notice.details.summary":"Exportdetails","notice.details.body":"Die heruntergeladene Datei enthält die zugeschnittenen Pixel, feste Schwärzungen und das wiederholte Wasserzeichen. Die Quelldatei wird nie hochgeladen oder verändert.","session.controls.aria":"Sitzungssteuerung","status.ready":"Bereit. Bild laden, um zu beginnen.","status.loading":"Bild wird geladen...","status.loaded":"Bild geladen. Lokal bearbeiten und anschließend exportieren.","status.exported":"{format} exportiert; Metadaten/EXIF wurden entfernt.","status.error.svg":"SVG-Importe werden für dieses datenschutzorientierte Tool nicht akzeptiert.","status.error.unsupported":"Die ausgewählte Datei ist kein unterstütztes Bild.","status.error.decode":"Dieses Bild konnte nicht dekodiert werden.","button.clear_all":"Alles löschen","button.export_jpeg":"JPEG exportieren","button.export_png":"PNG exportieren","button.choose_image":"Bild wählen","button.insert_date":"Datum einfügen","button.randomize":"Zufällig","button.remove_selected":"Auswahl entfernen","button.clear_boxes":"Boxen löschen","image.title":"1. Bild laden","image.dropzone.aria":"Bild ablegen oder Datei auswählen","image.dropzone.title":"ID- oder Pass-Scan ablegen","image.dropzone.hint":"PNG, JPEG, AVIF, GIF, BMP oder ein anderes vom Browser unterstütztes Bild.","image.no_loaded":"Kein Bild geladen.","image.reading":"Lokale Datei wird gelesen...","image.loaded":"{name} - {width} x {height}px. Beim Export werden Metadaten/EXIF entfernt.","image.error.svg":"Wähle ein Rasterbild wie PNG, JPEG, AVIF, GIF, BMP oder WebP.","image.error.unsupported":"Wähle eine vom Browser unterstützte Bilddatei.","image.error.decode":"Der Browser konnte dieses Bild nicht öffnen.","preview.title":"2. Vorschau bearbeiten","mode.aria":"Bearbeitungsmodus","mode.crop":"Zuschneiden","mode.redact":"Schwärzen","mode.preview":"Vorschau","preview.view":"Ansicht","preview.after":"Nachher","preview.before":"Vorher","preview.compare":"Vergleich","preview.canvas.aria":"Bildvorschau","preview.empty":"Lade ein Bild, um die Live-Vorschau zu sehen.","edit.empty":"Zuerst zuschneiden, dann feste Schwärzungsboxen zeichnen und exportieren.","edit.crop":"Ziehe Kanten, Ecken oder den Innenbereich des Zuschnitts. Ziehe außerhalb des Zuschnitts, um einen neuen Zuschnitt zu erstellen.","edit.redact":"Zeichne ein Rechteck zum Schwärzen. Ziehe eine ausgewählte Box zum Verschieben, ziehe Eckgriffe zum Skalieren oder doppelklicke sie zum Entfernen.","edit.preview":"Die Vorschau zeigt den zugeschnittenen Exportbereich mit eingebranntem Wasserzeichen und Schwärzungen.","controls.title":"3. Schützen und exportieren","watermark.title":"Wasserzeichen","watermark.text":"Text","watermark.default_text":"Nur für Hotel XYZ - {date}","watermark.font_size":"Schriftgröße","watermark.opacity":"Deckkraft","watermark.angle":"Winkel","watermark.spacing_x":"Horizontaler Abstand","watermark.spacing_y":"Vertikaler Abstand","watermark.offset_x":"Versatz X","watermark.offset_y":"Versatz Y","watermark.color":"Farbe","watermark.bold":"Wasserzeichen fett","redaction.title":"Schwärzungsboxen","redaction.box_color":"Boxfarbe","redaction.no_boxes":"Keine Boxen.","redaction.boxes_count_one":"1 feste Box.","redaction.boxes_count_many":"{count} feste Boxen.","export.title":"Export","export.jpeg_quality":"JPEG-Qualität","export.note":"Exporte enthalten Zuschnitt, Wasserzeichen und feste Schwärzungen. Metadaten/EXIF werden entfernt.","confirm.reset":"Geladenes Bild, Zuschnitt, Schwärzungen und Wasserzeichen-Einstellungen verwerfen?","footer.disclaimer":"Eigenständige Datei. Kein CDN, keine externen Schriften, kein Tracking, keine Uploads und keine Netzwerkaufrufe."},"fr":{"app.title":"ID Protect Offline","sponsor.aria":"Soutenir ce projet sur GitHub","sponsor.label":"Sponsor","brand.title":"ID Protect Offline","brand.subtitle":"Ajoutez un filigrane et masquez les scans d'identité avant partage.","privacy.pill":"Traitement local dans le navigateur - aucun téléversement, aucune ressource externe.","language.label":"Langue","language.option.en":"English","language.option.de":"Deutsch","language.option.fr":"Français","a11y.skip_to_content":"Aller au contenu","notice.aria":"Note de confidentialité et d'export","notice.title":"Conçu pour rester privé","notice.body":"Les images restent sur cet appareil. Les fichiers PNG/JPEG exportés sont redessinés avec Canvas, donc les métadonnées et EXIF d'origine ne sont pas copiés.","notice.details.summary":"Détails d'export","notice.details.body":"Le fichier téléchargé contient les pixels recadrés, les masquages pleins et le filigrane répété. Le fichier source n'est jamais téléversé ni modifié.","session.controls.aria":"Commandes de session","status.ready":"Prêt. Chargez une image pour commencer.","status.loading":"Chargement de l'image...","status.loaded":"Image chargée. Modifiez localement puis exportez.","status.exported":"{format} exporté avec métadonnées/EXIF supprimés.","status.error.svg":"Les imports SVG ne sont pas acceptés pour cet outil axé sur la confidentialité.","status.error.unsupported":"Le fichier sélectionné n'est pas une image prise en charge.","status.error.decode":"Impossible de décoder cette image.","button.clear_all":"Tout effacer","button.export_jpeg":"Exporter JPEG","button.export_png":"Exporter PNG","button.choose_image":"Choisir une image","button.insert_date":"Insérer la date","button.randomize":"Aléatoire","button.remove_selected":"Supprimer la sélection","button.clear_boxes":"Effacer les zones","image.title":"1. Charger l'image","image.dropzone.aria":"Déposer une image ou choisir un fichier","image.dropzone.title":"Déposer un scan d'identité ou de passeport","image.dropzone.hint":"PNG, JPEG, AVIF, GIF, BMP ou toute image prise en charge par le navigateur.","image.no_loaded":"Aucune image chargée.","image.reading":"Lecture du fichier local...","image.loaded":"{name} - {width} x {height}px. L'export supprimera les métadonnées/EXIF.","image.error.svg":"Choisissez une image matricielle comme PNG, JPEG, AVIF, GIF, BMP ou WebP.","image.error.unsupported":"Choisissez un fichier image pris en charge par le navigateur.","image.error.decode":"Le navigateur n'a pas pu ouvrir cette image.","preview.title":"2. Aperçu d'édition","mode.aria":"Mode d'édition","mode.crop":"Recadrer","mode.redact":"Masquer","mode.preview":"Aperçu","preview.view":"Vue","preview.after":"Après","preview.before":"Avant","preview.compare":"Comparer","preview.canvas.aria":"Aperçu de l'image","preview.empty":"Chargez une image pour afficher l'aperçu.","edit.empty":"Recadrez d'abord, puis dessinez des zones de masquage pleines et exportez.","edit.crop":"Faites glisser les bords, les coins ou l'intérieur du recadrage. Glissez hors du recadrage pour en créer un nouveau.","edit.redact":"Dessinez un rectangle pour masquer. Glissez une zone sélectionnée pour la déplacer, glissez ses poignées d'angle pour la redimensionner ou double-cliquez dessus pour la supprimer.","edit.preview":"L'aperçu montre la zone d'export recadrée avec filigrane et masquages intégrés.","controls.title":"3. Protéger et exporter","watermark.title":"Filigrane","watermark.text":"Texte","watermark.default_text":"Uniquement pour Hotel XYZ - {date}","watermark.font_size":"Taille de police","watermark.opacity":"Opacité","watermark.angle":"Angle","watermark.spacing_x":"Espacement horizontal","watermark.spacing_y":"Espacement vertical","watermark.offset_x":"Décalage X","watermark.offset_y":"Décalage Y","watermark.color":"Couleur","watermark.bold":"Texte du filigrane en gras","redaction.title":"Zones de masquage","redaction.box_color":"Couleur des zones","redaction.no_boxes":"Aucune zone.","redaction.boxes_count_one":"1 zone pleine.","redaction.boxes_count_many":"{count} zones pleines.","export.title":"Export","export.jpeg_quality":"Qualité JPEG","export.note":"Les exports intègrent recadrage, filigrane et masquages pleins. Les métadonnées/EXIF sont supprimés.","confirm.reset":"Supprimer l'image chargée, le recadrage, les masquages et les réglages du filigrane ?","footer.disclaimer":"Fichier autonome. Aucun CDN, police externe, suivi, téléversement ni appel réseau."}};
   </script>
   <script>
 (() => {
@@ -938,8 +934,6 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
   const MIN_BOX_SIDE = 8;
   const REDACTION_HANDLE_SIZE = 12;
   const MIN_WATERMARK_FONT_SIZE = 8;
-  const MIN_AUTO_WATERMARK_FONT_SIZE = 4;
-  const WATERMARK_FIT_PADDING = 3;
   const LOCALE_STORAGE_KEY = "idprotect.locale";
   const DEFAULT_LOCALE = "en";
   const SUPPORTED_LOCALES = ["en", "de", "fr"];
@@ -981,8 +975,6 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     editMessage: document.getElementById("editMessage"),
     previewToolbar: document.querySelector(".preview-toolbar"),
     previewMode: document.getElementById("previewMode"),
-    compareControl: document.getElementById("compareControl"),
-    compareSplit: document.getElementById("compareSplit"),
     modeButtons: Array.from(document.querySelectorAll("[data-mode]")),
     watermarkText: document.getElementById("watermarkText"),
     insertDateButton: document.getElementById("insertDateButton"),
@@ -1219,7 +1211,6 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     elements.redactionColor.value = state.redactionColor;
     elements.jpegQuality.value = String(state.jpegQuality);
     elements.previewMode.value = state.previewMode;
-    elements.compareSplit.value = String(state.compareSplit);
     updateReadouts();
     updateModeButtons();
     updateButtons();
@@ -1233,7 +1224,6 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     elements.removeBoxButton.disabled = !hasSelectedBox;
     elements.clearBoxesButton.disabled = state.redactions.length === 0;
     elements.previewToolbar.hidden = state.toolMode !== "preview";
-    elements.compareControl.hidden = state.previewMode !== "compare";
     elements.redactionMessage.textContent = redactionCountText();
   }
 
@@ -1380,7 +1370,7 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     const longSide = Math.max(state.image.width, state.image.height);
     state.watermark.fontSize = clamp(Math.round(shortSide / 18), MIN_WATERMARK_FONT_SIZE, 112);
     state.watermark.spacingX = clamp(Math.round(longSide / 3), 60, 720);
-    state.watermark.spacingY = clamp(Math.round(shortSide / 3.8), 40, 420);
+    state.watermark.spacingY = clamp(Math.round(shortSide / 5), 40, 420);
     state.watermark.offsetX = 0;
     state.watermark.offsetY = 0;
   }
@@ -1655,11 +1645,10 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     if (!lines.length) return;
 
-    let fontSize = clamp(Number(state.watermark.fontSize) || 48, MIN_WATERMARK_FONT_SIZE, 220);
+    const fontSize = clamp(Number(state.watermark.fontSize) || 48, MIN_WATERMARK_FONT_SIZE, 220);
     const spacingX = Math.max(40, Number(state.watermark.spacingX) || 300);
     const spacingY = Math.max(40, Number(state.watermark.spacingY) || 160);
     const angle = (Number(state.watermark.angle) || 0) * Math.PI / 180;
-    const diagonal = Math.sqrt(width * width + height * height) * 1.25;
     const offsetX = Number(state.watermark.offsetX) || 0;
     const offsetY = Number(state.watermark.offsetY) || 0;
 
@@ -1669,37 +1658,22 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     targetCtx.textAlign = "center";
     targetCtx.textBaseline = "middle";
 
-    let metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
-    const fitScale = watermarkFitScale(metrics.blockWidth, metrics.blockHeight, angle, width, height);
-    if (fitScale < 1) {
-      fontSize = Math.max(MIN_AUTO_WATERMARK_FONT_SIZE, Math.floor(fontSize * fitScale));
-      metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
-    }
-
+    const metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
     const { blockWidth, blockHeight, lineMetrics } = metrics;
     const effectiveSpacingX = Math.max(spacingX, blockWidth + fontSize * 0.8);
     const effectiveSpacingY = Math.max(spacingY, blockHeight + fontSize * 0.6);
+    const diagonal = Math.sqrt(width * width + height * height) + blockWidth + blockHeight;
     targetCtx.translate(width / 2, height / 2);
     targetCtx.rotate(angle);
 
     const startX = gridStartForCenteredTiles(diagonal, offsetX, effectiveSpacingX);
     const startY = gridStartForCenteredTiles(diagonal, offsetY, effectiveSpacingY);
-    let drewTile = false;
     for (let y = startY; y <= diagonal; y += effectiveSpacingY) {
       for (let x = startX; x <= diagonal; x += effectiveSpacingX) {
-        if (rotatedTextFitsImage(x, y, blockWidth, blockHeight, angle, width, height, WATERMARK_FIT_PADDING)) {
-          drewTile = true;
-          lineMetrics.forEach((line) => {
-            targetCtx.fillText(line.text, x, y + line.y);
-          });
-        }
+        lineMetrics.forEach((line) => {
+          targetCtx.fillText(line.text, x, y + line.y);
+        });
       }
-    }
-
-    if (!drewTile && rotatedTextFitsImage(0, 0, blockWidth, blockHeight, angle, width, height, WATERMARK_FIT_PADDING)) {
-      lineMetrics.forEach((line) => {
-        targetCtx.fillText(line.text, 0, line.y);
-      });
     }
 
     targetCtx.restore();
@@ -1721,45 +1695,8 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     };
   }
 
-  function watermarkFitScale(textWidth, textHeight, angle, imageWidth, imageHeight) {
-    const projected = projectedRotatedSize(textWidth, textHeight, angle);
-    const maxWidth = Math.max(1, imageWidth - WATERMARK_FIT_PADDING * 2);
-    const maxHeight = Math.max(1, imageHeight - WATERMARK_FIT_PADDING * 2);
-    return Math.min(1, maxWidth / projected.width, maxHeight / projected.height);
-  }
-
-  function projectedRotatedSize(width, height, angle) {
-    const cos = Math.abs(Math.cos(angle));
-    const sin = Math.abs(Math.sin(angle));
-    return {
-      width: width * cos + height * sin,
-      height: width * sin + height * cos
-    };
-  }
-
   function gridStartForCenteredTiles(diagonal, offset, spacing) {
     return -Math.ceil((diagonal + offset) / spacing) * spacing + offset;
-  }
-
-  function rotatedTextFitsImage(localX, localY, textWidth, textHeight, angle, imageWidth, imageHeight, padding) {
-    const halfWidth = textWidth / 2;
-    const halfHeight = textHeight / 2;
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    const centerX = imageWidth / 2;
-    const centerY = imageHeight / 2;
-    const corners = [
-      [localX - halfWidth, localY - halfHeight],
-      [localX + halfWidth, localY - halfHeight],
-      [localX + halfWidth, localY + halfHeight],
-      [localX - halfWidth, localY + halfHeight]
-    ];
-
-    return corners.every(([x, y]) => {
-      const imageX = centerX + x * cos - y * sin;
-      const imageY = centerY + x * sin + y * cos;
-      return imageX >= padding && imageX <= imageWidth - padding && imageY >= padding && imageY <= imageHeight - padding;
-    });
   }
 
   function drawRedactions(targetCtx, originX, originY, width, height) {
@@ -1822,6 +1759,15 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
   }
 
   function pointerToSource(event, allowOutside) {
+    const point = pointerToCanvas(event, allowOutside);
+    if (!point) return null;
+    return {
+      x: display.sourceX + (point.x - display.drawX) / display.scale,
+      y: display.sourceY + (point.y - display.drawY) / display.scale
+    };
+  }
+
+  function pointerToCanvas(event, allowOutside) {
     if (!display) return null;
     const rect = elements.canvas.getBoundingClientRect();
     const canvasX = event.clientX - rect.left;
@@ -1836,14 +1782,43 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
         return null;
       }
     }
-    return {
-      x: display.sourceX + (canvasX - display.drawX) / display.scale,
-      y: display.sourceY + (canvasY - display.drawY) / display.scale
-    };
+    return { x: canvasX, y: canvasY };
+  }
+
+  function isComparePreviewActive() {
+    return state.toolMode === "preview" && state.previewMode === "compare";
+  }
+
+  function hitCompareDivider(point) {
+    if (!display) return false;
+    const splitX = display.drawX + display.drawW * (state.compareSplit / 100);
+    const threshold = 22;
+    return (
+      point.y >= display.drawY &&
+      point.y <= display.drawY + display.drawH &&
+      Math.abs(point.x - splitX) <= threshold
+    );
+  }
+
+  function updateCompareSplit(point) {
+    if (!display || display.drawW <= 0) return;
+    const x = clamp(point.x, display.drawX, display.drawX + display.drawW);
+    state.compareSplit = clamp(((x - display.drawX) / display.drawW) * 100, 0, 100);
   }
 
   function handlePointerDown(event) {
-    if (!state.image || state.toolMode === "preview") return;
+    if (!state.image) return;
+    if (isComparePreviewActive()) {
+      const point = pointerToCanvas(event, false);
+      if (!point || !hitCompareDivider(point)) return;
+      elements.canvas.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      state.interaction = { type: "compare-split" };
+      updateCompareSplit(point);
+      requestRender();
+      return;
+    }
+    if (state.toolMode === "preview") return;
     const point = pointerToSource(event, false);
     if (!point) return;
     elements.canvas.setPointerCapture(event.pointerId);
@@ -1866,18 +1841,28 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
       return;
     }
 
-    const point = pointerToSource(event, true);
-    if (!point) return;
     event.preventDefault();
 
     if (state.interaction.type === "crop") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateCropInteraction(point);
     } else if (state.interaction.type === "box-create") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateBoxCreate(point);
     } else if (state.interaction.type === "box-move") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateBoxMove(point);
     } else if (state.interaction.type === "box-resize") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateBoxResize(point);
+    } else if (state.interaction.type === "compare-split") {
+      const point = pointerToCanvas(event, true);
+      if (!point) return;
+      updateCompareSplit(point);
     }
     requestRender();
   }
@@ -1913,7 +1898,16 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
   }
 
   function updatePointerCursor(event) {
-    if (!state.image || state.toolMode === "preview") {
+    if (!state.image) {
+      elements.canvas.style.cursor = "default";
+      return;
+    }
+    if (isComparePreviewActive()) {
+      const point = pointerToCanvas(event, false);
+      elements.canvas.style.cursor = point && hitCompareDivider(point) ? "ew-resize" : "default";
+      return;
+    }
+    if (state.toolMode === "preview") {
       elements.canvas.style.cursor = "default";
       return;
     }
@@ -2336,10 +2330,6 @@ window.IDPROTECT_EMBEDDED_LOCALES = {"en":{"app.title":"ID Protect Offline","spo
     elements.previewMode.addEventListener("change", () => {
       state.previewMode = elements.previewMode.value;
       updateButtons();
-      requestRender();
-    });
-    elements.compareSplit.addEventListener("input", () => {
-      state.compareSplit = Number(elements.compareSplit.value);
       requestRender();
     });
 

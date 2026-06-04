@@ -7,8 +7,6 @@
   const MIN_BOX_SIDE = 8;
   const REDACTION_HANDLE_SIZE = 12;
   const MIN_WATERMARK_FONT_SIZE = 8;
-  const MIN_AUTO_WATERMARK_FONT_SIZE = 4;
-  const WATERMARK_FIT_PADDING = 3;
   const LOCALE_STORAGE_KEY = "idprotect.locale";
   const DEFAULT_LOCALE = "en";
   const SUPPORTED_LOCALES = ["en", "de", "fr"];
@@ -50,8 +48,6 @@
     editMessage: document.getElementById("editMessage"),
     previewToolbar: document.querySelector(".preview-toolbar"),
     previewMode: document.getElementById("previewMode"),
-    compareControl: document.getElementById("compareControl"),
-    compareSplit: document.getElementById("compareSplit"),
     modeButtons: Array.from(document.querySelectorAll("[data-mode]")),
     watermarkText: document.getElementById("watermarkText"),
     insertDateButton: document.getElementById("insertDateButton"),
@@ -288,7 +284,6 @@
     elements.redactionColor.value = state.redactionColor;
     elements.jpegQuality.value = String(state.jpegQuality);
     elements.previewMode.value = state.previewMode;
-    elements.compareSplit.value = String(state.compareSplit);
     updateReadouts();
     updateModeButtons();
     updateButtons();
@@ -302,7 +297,6 @@
     elements.removeBoxButton.disabled = !hasSelectedBox;
     elements.clearBoxesButton.disabled = state.redactions.length === 0;
     elements.previewToolbar.hidden = state.toolMode !== "preview";
-    elements.compareControl.hidden = state.previewMode !== "compare";
     elements.redactionMessage.textContent = redactionCountText();
   }
 
@@ -449,7 +443,7 @@
     const longSide = Math.max(state.image.width, state.image.height);
     state.watermark.fontSize = clamp(Math.round(shortSide / 18), MIN_WATERMARK_FONT_SIZE, 112);
     state.watermark.spacingX = clamp(Math.round(longSide / 3), 60, 720);
-    state.watermark.spacingY = clamp(Math.round(shortSide / 3.8), 40, 420);
+    state.watermark.spacingY = clamp(Math.round(shortSide / 5), 40, 420);
     state.watermark.offsetX = 0;
     state.watermark.offsetY = 0;
   }
@@ -724,11 +718,10 @@
     const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     if (!lines.length) return;
 
-    let fontSize = clamp(Number(state.watermark.fontSize) || 48, MIN_WATERMARK_FONT_SIZE, 220);
+    const fontSize = clamp(Number(state.watermark.fontSize) || 48, MIN_WATERMARK_FONT_SIZE, 220);
     const spacingX = Math.max(40, Number(state.watermark.spacingX) || 300);
     const spacingY = Math.max(40, Number(state.watermark.spacingY) || 160);
     const angle = (Number(state.watermark.angle) || 0) * Math.PI / 180;
-    const diagonal = Math.sqrt(width * width + height * height) * 1.25;
     const offsetX = Number(state.watermark.offsetX) || 0;
     const offsetY = Number(state.watermark.offsetY) || 0;
 
@@ -738,37 +731,22 @@
     targetCtx.textAlign = "center";
     targetCtx.textBaseline = "middle";
 
-    let metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
-    const fitScale = watermarkFitScale(metrics.blockWidth, metrics.blockHeight, angle, width, height);
-    if (fitScale < 1) {
-      fontSize = Math.max(MIN_AUTO_WATERMARK_FONT_SIZE, Math.floor(fontSize * fitScale));
-      metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
-    }
-
+    const metrics = measureWatermarkBlock(targetCtx, lines, fontSize);
     const { blockWidth, blockHeight, lineMetrics } = metrics;
     const effectiveSpacingX = Math.max(spacingX, blockWidth + fontSize * 0.8);
     const effectiveSpacingY = Math.max(spacingY, blockHeight + fontSize * 0.6);
+    const diagonal = Math.sqrt(width * width + height * height) + blockWidth + blockHeight;
     targetCtx.translate(width / 2, height / 2);
     targetCtx.rotate(angle);
 
     const startX = gridStartForCenteredTiles(diagonal, offsetX, effectiveSpacingX);
     const startY = gridStartForCenteredTiles(diagonal, offsetY, effectiveSpacingY);
-    let drewTile = false;
     for (let y = startY; y <= diagonal; y += effectiveSpacingY) {
       for (let x = startX; x <= diagonal; x += effectiveSpacingX) {
-        if (rotatedTextFitsImage(x, y, blockWidth, blockHeight, angle, width, height, WATERMARK_FIT_PADDING)) {
-          drewTile = true;
-          lineMetrics.forEach((line) => {
-            targetCtx.fillText(line.text, x, y + line.y);
-          });
-        }
+        lineMetrics.forEach((line) => {
+          targetCtx.fillText(line.text, x, y + line.y);
+        });
       }
-    }
-
-    if (!drewTile && rotatedTextFitsImage(0, 0, blockWidth, blockHeight, angle, width, height, WATERMARK_FIT_PADDING)) {
-      lineMetrics.forEach((line) => {
-        targetCtx.fillText(line.text, 0, line.y);
-      });
     }
 
     targetCtx.restore();
@@ -790,45 +768,8 @@
     };
   }
 
-  function watermarkFitScale(textWidth, textHeight, angle, imageWidth, imageHeight) {
-    const projected = projectedRotatedSize(textWidth, textHeight, angle);
-    const maxWidth = Math.max(1, imageWidth - WATERMARK_FIT_PADDING * 2);
-    const maxHeight = Math.max(1, imageHeight - WATERMARK_FIT_PADDING * 2);
-    return Math.min(1, maxWidth / projected.width, maxHeight / projected.height);
-  }
-
-  function projectedRotatedSize(width, height, angle) {
-    const cos = Math.abs(Math.cos(angle));
-    const sin = Math.abs(Math.sin(angle));
-    return {
-      width: width * cos + height * sin,
-      height: width * sin + height * cos
-    };
-  }
-
   function gridStartForCenteredTiles(diagonal, offset, spacing) {
     return -Math.ceil((diagonal + offset) / spacing) * spacing + offset;
-  }
-
-  function rotatedTextFitsImage(localX, localY, textWidth, textHeight, angle, imageWidth, imageHeight, padding) {
-    const halfWidth = textWidth / 2;
-    const halfHeight = textHeight / 2;
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    const centerX = imageWidth / 2;
-    const centerY = imageHeight / 2;
-    const corners = [
-      [localX - halfWidth, localY - halfHeight],
-      [localX + halfWidth, localY - halfHeight],
-      [localX + halfWidth, localY + halfHeight],
-      [localX - halfWidth, localY + halfHeight]
-    ];
-
-    return corners.every(([x, y]) => {
-      const imageX = centerX + x * cos - y * sin;
-      const imageY = centerY + x * sin + y * cos;
-      return imageX >= padding && imageX <= imageWidth - padding && imageY >= padding && imageY <= imageHeight - padding;
-    });
   }
 
   function drawRedactions(targetCtx, originX, originY, width, height) {
@@ -891,6 +832,15 @@
   }
 
   function pointerToSource(event, allowOutside) {
+    const point = pointerToCanvas(event, allowOutside);
+    if (!point) return null;
+    return {
+      x: display.sourceX + (point.x - display.drawX) / display.scale,
+      y: display.sourceY + (point.y - display.drawY) / display.scale
+    };
+  }
+
+  function pointerToCanvas(event, allowOutside) {
     if (!display) return null;
     const rect = elements.canvas.getBoundingClientRect();
     const canvasX = event.clientX - rect.left;
@@ -905,14 +855,43 @@
         return null;
       }
     }
-    return {
-      x: display.sourceX + (canvasX - display.drawX) / display.scale,
-      y: display.sourceY + (canvasY - display.drawY) / display.scale
-    };
+    return { x: canvasX, y: canvasY };
+  }
+
+  function isComparePreviewActive() {
+    return state.toolMode === "preview" && state.previewMode === "compare";
+  }
+
+  function hitCompareDivider(point) {
+    if (!display) return false;
+    const splitX = display.drawX + display.drawW * (state.compareSplit / 100);
+    const threshold = 22;
+    return (
+      point.y >= display.drawY &&
+      point.y <= display.drawY + display.drawH &&
+      Math.abs(point.x - splitX) <= threshold
+    );
+  }
+
+  function updateCompareSplit(point) {
+    if (!display || display.drawW <= 0) return;
+    const x = clamp(point.x, display.drawX, display.drawX + display.drawW);
+    state.compareSplit = clamp(((x - display.drawX) / display.drawW) * 100, 0, 100);
   }
 
   function handlePointerDown(event) {
-    if (!state.image || state.toolMode === "preview") return;
+    if (!state.image) return;
+    if (isComparePreviewActive()) {
+      const point = pointerToCanvas(event, false);
+      if (!point || !hitCompareDivider(point)) return;
+      elements.canvas.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      state.interaction = { type: "compare-split" };
+      updateCompareSplit(point);
+      requestRender();
+      return;
+    }
+    if (state.toolMode === "preview") return;
     const point = pointerToSource(event, false);
     if (!point) return;
     elements.canvas.setPointerCapture(event.pointerId);
@@ -935,18 +914,28 @@
       return;
     }
 
-    const point = pointerToSource(event, true);
-    if (!point) return;
     event.preventDefault();
 
     if (state.interaction.type === "crop") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateCropInteraction(point);
     } else if (state.interaction.type === "box-create") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateBoxCreate(point);
     } else if (state.interaction.type === "box-move") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateBoxMove(point);
     } else if (state.interaction.type === "box-resize") {
+      const point = pointerToSource(event, true);
+      if (!point) return;
       updateBoxResize(point);
+    } else if (state.interaction.type === "compare-split") {
+      const point = pointerToCanvas(event, true);
+      if (!point) return;
+      updateCompareSplit(point);
     }
     requestRender();
   }
@@ -982,7 +971,16 @@
   }
 
   function updatePointerCursor(event) {
-    if (!state.image || state.toolMode === "preview") {
+    if (!state.image) {
+      elements.canvas.style.cursor = "default";
+      return;
+    }
+    if (isComparePreviewActive()) {
+      const point = pointerToCanvas(event, false);
+      elements.canvas.style.cursor = point && hitCompareDivider(point) ? "ew-resize" : "default";
+      return;
+    }
+    if (state.toolMode === "preview") {
       elements.canvas.style.cursor = "default";
       return;
     }
@@ -1405,10 +1403,6 @@
     elements.previewMode.addEventListener("change", () => {
       state.previewMode = elements.previewMode.value;
       updateButtons();
-      requestRender();
-    });
-    elements.compareSplit.addEventListener("input", () => {
-      state.compareSplit = Number(elements.compareSplit.value);
       requestRender();
     });
 
