@@ -888,6 +888,7 @@ footer {
   const IMAGE_NAME_RE = /\.(avif|bmp|gif|jpe?g|png|webp)$/i;
   const MIN_CROP_SIDE = 32;
   const MIN_BOX_SIDE = 8;
+  const REDACTION_HANDLE_SIZE = 12;
 
   const DEFAULTS = {
     watermark: {
@@ -1102,7 +1103,7 @@ footer {
       return;
     }
     if (state.toolMode === "redact") {
-      elements.editMessage.textContent = "Draw a rectangle to redact. Click an existing box to move it or remove it.";
+      elements.editMessage.textContent = "Draw a rectangle to redact. Drag a selected box to move it, drag corner handles to resize it, or double-click it to remove it.";
       return;
     }
     elements.editMessage.textContent = "Preview shows the cropped export area with watermark and redactions baked in.";
@@ -1499,19 +1500,51 @@ footer {
     targetCtx.font = `${state.watermark.bold ? "800" : "500"} ${fontSize}px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     targetCtx.textAlign = "center";
     targetCtx.textBaseline = "middle";
+    const blockOffset = -((lines.length - 1) * lineHeight) / 2;
+    const lineMetrics = lines.map((line, index) => ({
+      text: line,
+      width: targetCtx.measureText(line).width,
+      y: blockOffset + index * lineHeight
+    }));
+    const blockWidth = lineMetrics.reduce((maxWidth, line) => Math.max(maxWidth, line.width), 0);
+    const blockHeight = Math.max(fontSize, (lineMetrics.length - 1) * lineHeight + fontSize);
+    const effectiveSpacingX = Math.max(spacingX, blockWidth + fontSize * 0.8);
+    const effectiveSpacingY = Math.max(spacingY, blockHeight + fontSize * 0.6);
     targetCtx.translate(width / 2, height / 2);
     targetCtx.rotate(angle);
 
-    for (let y = -diagonal + offsetY; y <= diagonal; y += spacingY) {
-      for (let x = -diagonal + offsetX; x <= diagonal; x += spacingX) {
-        const blockOffset = -((lines.length - 1) * lineHeight) / 2;
-        lines.forEach((line, index) => {
-          targetCtx.fillText(line, x, y + blockOffset + index * lineHeight);
-        });
+    for (let y = -diagonal + offsetY; y <= diagonal; y += effectiveSpacingY) {
+      for (let x = -diagonal + offsetX; x <= diagonal; x += effectiveSpacingX) {
+        if (rotatedTextFitsImage(x, y, blockWidth, blockHeight, angle, width, height)) {
+          lineMetrics.forEach((line) => {
+            targetCtx.fillText(line.text, x, y + line.y);
+          });
+        }
       }
     }
 
     targetCtx.restore();
+  }
+
+  function rotatedTextFitsImage(localX, localY, textWidth, textHeight, angle, imageWidth, imageHeight) {
+    const halfWidth = textWidth / 2;
+    const halfHeight = textHeight / 2;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const centerX = imageWidth / 2;
+    const centerY = imageHeight / 2;
+    const corners = [
+      [localX - halfWidth, localY - halfHeight],
+      [localX + halfWidth, localY - halfHeight],
+      [localX + halfWidth, localY + halfHeight],
+      [localX - halfWidth, localY + halfHeight]
+    ];
+
+    return corners.every(([x, y]) => {
+      const imageX = centerX + x * cos - y * sin;
+      const imageY = centerY + x * sin + y * cos;
+      return imageX >= 0 && imageX <= imageWidth && imageY >= 0 && imageY <= imageHeight;
+    });
   }
 
   function drawRedactions(targetCtx, originX, originY, width, height) {
@@ -1535,6 +1568,31 @@ footer {
     targetCtx.setLineDash([6 / Math.max(scale, 0.001), 5 / Math.max(scale, 0.001)]);
     targetCtx.strokeStyle = "#0f766e";
     targetCtx.strokeRect(clipped.x - originX, clipped.y - originY, clipped.w, clipped.h);
+    drawRedactionHandles(targetCtx, clipped.x - originX, clipped.y - originY, clipped.w, clipped.h, scale);
+    targetCtx.restore();
+  }
+
+  function drawRedactionHandles(targetCtx, x, y, width, height, scale) {
+    const size = REDACTION_HANDLE_SIZE / Math.max(scale, 0.001);
+    const half = size / 2;
+    const handles = [
+      [x, y],
+      [x + width, y],
+      [x + width, y + height],
+      [x, y + height]
+    ];
+
+    targetCtx.save();
+    targetCtx.setLineDash([]);
+    targetCtx.lineWidth = 2 / Math.max(scale, 0.001);
+    targetCtx.fillStyle = "#ffffff";
+    targetCtx.strokeStyle = "#0f766e";
+    handles.forEach(([handleX, handleY]) => {
+      targetCtx.beginPath();
+      targetCtx.rect(handleX - half, handleY - half, size, size);
+      targetCtx.fill();
+      targetCtx.stroke();
+    });
     targetCtx.restore();
   }
 
@@ -1603,6 +1661,8 @@ footer {
       updateBoxCreate(point);
     } else if (state.interaction.type === "box-move") {
       updateBoxMove(point);
+    } else if (state.interaction.type === "box-resize") {
+      updateBoxResize(point);
     }
     requestRender();
   }
@@ -1626,6 +1686,17 @@ footer {
     requestRender();
   }
 
+  function handleCanvasDoubleClick(event) {
+    if (!state.image || state.toolMode !== "redact") return;
+    const point = pointerToSource(event, false);
+    if (!point) return;
+    const hit = hitRedaction(point);
+    if (!hit) return;
+    event.preventDefault();
+    state.selectedBoxId = hit.id;
+    removeSelectedBox();
+  }
+
   function updatePointerCursor(event) {
     if (!state.image || state.toolMode === "preview") {
       elements.canvas.style.cursor = "default";
@@ -1637,7 +1708,12 @@ footer {
       return;
     }
     if (state.toolMode === "redact") {
-      elements.canvas.style.cursor = hitRedaction(point) ? "move" : "crosshair";
+      const handle = hitSelectedRedactionHandle(point);
+      if (handle) {
+        elements.canvas.style.cursor = handleCursor(handle);
+      } else {
+        elements.canvas.style.cursor = hitRedaction(point) ? "move" : "crosshair";
+      }
       return;
     }
     const hit = hitCrop(point);
@@ -1747,6 +1823,19 @@ footer {
   }
 
   function startRedactionInteraction(point) {
+    const handle = hitSelectedRedactionHandle(point);
+    if (handle) {
+      const selected = getSelectedBox();
+      state.interaction = {
+        type: "box-resize",
+        handle,
+        start: point,
+        box: selected,
+        initial: { ...selected }
+      };
+      return;
+    }
+
     const hit = hitRedaction(point);
     if (hit) {
       state.selectedBoxId = hit.id;
@@ -1804,6 +1893,64 @@ footer {
     action.box.h = next.h;
   }
 
+  function updateBoxResize(point) {
+    const action = state.interaction;
+    const initial = action.initial;
+    const dx = point.x - action.start.x;
+    const dy = point.y - action.start.y;
+    let left = initial.x;
+    let top = initial.y;
+    let right = initial.x + initial.w;
+    let bottom = initial.y + initial.h;
+
+    if (action.handle.includes("w")) left += dx;
+    if (action.handle.includes("e")) right += dx;
+    if (action.handle.includes("n")) top += dy;
+    if (action.handle.includes("s")) bottom += dy;
+
+    const next = clampBoxToCrop({
+      x: left,
+      y: top,
+      w: right - left,
+      h: bottom - top
+    }, MIN_BOX_SIDE);
+    action.box.x = next.x;
+    action.box.y = next.y;
+    action.box.w = next.w;
+    action.box.h = next.h;
+  }
+
+  function hitSelectedRedactionHandle(point) {
+    const selected = getSelectedBox();
+    if (!selected) return null;
+    const visible = intersectRects(selected, getCrop());
+    if (!visible) return null;
+    const threshold = REDACTION_HANDLE_SIZE / Math.max(display ? display.scale : 1, 0.001);
+    const handles = redactionHandlePoints(visible);
+    for (const handle of handles) {
+      if (
+        Math.abs(point.x - handle.x) <= threshold &&
+        Math.abs(point.y - handle.y) <= threshold
+      ) {
+        return handle.name;
+      }
+    }
+    return null;
+  }
+
+  function redactionHandlePoints(rect) {
+    return [
+      { name: "nw", x: rect.x, y: rect.y },
+      { name: "ne", x: rect.x + rect.w, y: rect.y },
+      { name: "se", x: rect.x + rect.w, y: rect.y + rect.h },
+      { name: "sw", x: rect.x, y: rect.y + rect.h }
+    ];
+  }
+
+  function handleCursor(handle) {
+    return (handle === "ne" || handle === "sw") ? "nesw-resize" : "nwse-resize";
+  }
+
   function hitRedaction(point) {
     for (let index = state.redactions.length - 1; index >= 0; index -= 1) {
       const box = state.redactions[index];
@@ -1821,7 +1968,7 @@ footer {
     return null;
   }
 
-  function clampBoxToCrop(rect) {
+  function clampBoxToCrop(rect, minSide = 1) {
     const crop = getCrop();
     let x = rect.x;
     let y = rect.y;
@@ -1835,8 +1982,8 @@ footer {
       y += h;
       h = Math.abs(h);
     }
-    w = Math.min(w, crop.w);
-    h = Math.min(h, crop.h);
+    w = clamp(w, minSide, crop.w);
+    h = clamp(h, minSide, crop.h);
     x = clamp(x, crop.x, crop.x + crop.w - w);
     y = clamp(y, crop.y, crop.y + crop.h - h);
     return {
@@ -2031,6 +2178,7 @@ footer {
     elements.canvas.addEventListener("pointerup", handlePointerUp);
     elements.canvas.addEventListener("pointercancel", handlePointerUp);
     elements.canvas.addEventListener("pointerleave", updatePointerCursor);
+    elements.canvas.addEventListener("dblclick", handleCanvasDoubleClick);
 
     window.addEventListener("resize", requestRender);
     window.addEventListener("keydown", (event) => {
